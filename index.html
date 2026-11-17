@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ZaborAn - Cybersecurity Portfolio | Blue Team & Digital Forensics | SOC Analyst & DFIR">
+    <title>ZaborAn | Cybersecurity Portfolio</title>
+
+    <!-- ============================================================ -->
+    <!-- LIÊN KẾT FILE CSS BÊN NGOÀI                                   -->
+    <!-- Chứa toàn bộ style cho trang web (layout, màu sắc, hiệu ứng)  -->
+    <!-- ============================================================ -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- ============================================================ -->
+    <!-- GOOGLE FONTS                                                  -->
+    <!-- JetBrains Mono: dùng cho tiêu đề, thông số kỹ thuật, code     -->
+    <!-- Inter: dùng cho văn bản thường, dễ đọc                        -->
+    <!-- ============================================================ -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- ============================================================ -->
+    <!-- FONT AWESOME CDN: Thư viện icon (shield, terminal, bug, ...)  -->
+    <!-- ============================================================ -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- ============================================================ -->
+    <!-- SCRIPT CHÍNH: defer để không chặn render HTML                 -->
+    <!-- Xử lý: chuyển tab, typing effect, canvas background, copy email, ... -->
+    <!-- ============================================================ -->
+    <script src="script.js" defer></script>
+</head>
+<body>
+
+    <!-- ============================================================ -->
+    <!-- CANVAS NỀN TOÀN TRANG: Vẽ hiệu ứng mạch điện tử LED trắng/xám -->
+    <!-- Canvas này được JS (script.js) xử lý vẽ animation              -->
+    <!-- Thuộc tính aria-hidden để screen reader bỏ qua                -->
+    <!-- ============================================================ -->
+    <canvas id="circuit-bg" aria-hidden="true"></canvas>
+
+    <!-- ============================================================ -->
+    <!-- LOGO CỐ ĐỊNH GÓC DƯỚI BÊN TRÁI                               -->
+    <!-- Khi click vào logo -> JS sẽ chuyển về Home + cuộn lên đầu     -->
+    <!-- Bạn có thể thay logo.png bằng file ảnh thật của bạn           -->
+    <!-- ============================================================ -->
+    <a href="#" id="floating-logo" aria-label="ZaborAn - Back to Home">
+        <img src="logo.png" alt="ZaborAn Logo">
+    </a>
+
+    <!-- ============================================================ -->
+    <!-- NAVBAR: Thanh điều hướng trên cùng cố định                    -->
+    <!-- Trái: tên thương hiệu "ZaborAn" (click -> Home)               -->
+    <!-- Phải: 4 nút điều hướng với data-target tương ứng 4 section    -->
+    <!-- ============================================================ -->
+    <header class="navbar" id="main-navbar">
+        <!-- Tên thương hiệu bên trái -->
+        <a href="#" class="brand" data-target="home">
+            <span class="brand-icon"><i class="fas fa-shield-halved"></i></span>
+            <span class="brand-text">ZaborAn</span>
+        </a>
+
+        <!-- Danh sách 4 nút điều hướng bên phải -->
+        <nav class="nav-links" aria-label="Main navigation">
+            <!-- Nút Home (mặc định active) -->
+            <a href="#" class="nav-link active" data-target="home">Home</a>
+
+            <!-- Nút Projects & Achievements -->
+            <a href="#" class="nav-link" data-target="projects">Projects &amp; Achievements</a>
+
+            <!-- Nút Career Roadmap -->
+            <a href="#" class="nav-link" data-target="roadmap">Career Roadmap</a>
+
+            <!-- Nút Contact & Connect -->
+            <a href="#" class="nav-link" data-target="contact">Contact &amp; Connect</a>
+        </nav>
+    </header>
+
+    <!-- ============================================================ -->
+    <!-- MAIN: Chứa 4 section chính (page-section)                     -->
+    <!-- Chỉ section có class "active" được hiển thị                   -->
+    <!-- ============================================================ -->
+    <main class="main-content">
+
+        <!-- ======================================================== -->
+        <!-- SECTION 1: HOME (id="home") - Mặc định active            -->
+        <!-- Gồm: Hero giới thiệu + 3 thẻ preview tương tác           -->
+        <!-- ======================================================== -->
+        <section id="home" class="page-section active">
+
+            <!-- ----- PHẦN A: HERO & GIỚI THIỆU BẢN THÂN ----- -->
+            <div class="hero">
+                <!-- Khối chữ bên trái -->
+                <div class="hero-text">
+                    <!-- Dòng chào nhỏ -->
+                    <p class="hero-greeting">
+                        <i class="fas fa-terminal"></i> Hello, I am
+                    </p>
+
+                    <!-- Alias lớn -->
+                    <h1 class="hero-alias">ZaborAn</h1>
+
+                    <!-- Tên thật + năm sinh -->
+                    <p class="hero-realname">
+                        <i class="fas fa-id-card"></i>
+                        Le Dinh Thuc <span class="dot">&middot;</span> born 2007
+                    </p>
+
+                    <!-- Dòng hiệu ứng gõ chữ động (JS điều khiển) -->
+                    <p class="hero-role">
+                        <span id="typing-role"></span><span class="cursor">|</span>
+                    </p>
+
+                    <!-- Trường học & chuyên ngành -->
+                    <p class="hero-education">
+                        <i class="fas fa-graduation-cap"></i>
+                        Information Security Student at
+                        <strong>Academy of Cryptography Techniques (KMA)</strong>
+                        &mdash; Ho Chi Minh City Campus
+                    </p>
+
+                    <!-- Định hướng cốt lõi -->
+                    <p class="hero-focus">
+                        <i class="fas fa-crosshairs"></i>
+                        Core Focus:
+                        <span class="badge badge-blue">Blue Team</span>
+                        <span class="badge badge-blue">Digital Forensics</span>
+                        <span class="badge badge-green">SOC Analyst</span>
+                        <span class="badge badge-green">DFIR &mdash; Endpoint &amp; Memory Forensics</span>
+                    </p>
+
+                    <!-- Tóm tắt bộ kỹ năng cốt lõi -->
+                    <div class="hero-skills">
+                        <span class="skill-chip"><i class="fas fa-network-wired"></i> Wireshark</span>
+                        <span class="skill-chip"><i class="fas fa-memory"></i> Volatility 3</span>
+                        <span class="skill-chip"><i class="fas fa-file-code"></i> HxD</span>
+                        <span class="skill-chip"><i class="fab fa-linux"></i> Linux</span>
+                        <span class="skill-chip"><i class="fas fa-sitemap"></i> Cisco Networking</span>
+                        <span class="skill-chip"><i class="fab fa-python"></i> Python</span>
+                    </div>
+                </div>
+
+                <!-- Khối hình/icon bên phải (có thể thay bằng ảnh thật) -->
+                <div class="hero-visual">
+                    <div class="hero-avatar">
+                        <i class="fas fa-user-secret"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ----- PHẦN B: 3 THẺ PREVIEW TƯƠNG TÁC ----- -->
+            <!-- Mỗi thẻ dẫn sang 1 section khác qua data-goto           -->
+            <!-- Bạn có thể sửa nội dung bên trong từng thẻ tùy ý        -->
+            <div class="preview-grid">
+
+                <!-- === PREVIEW CARD 1: Dẫn tới Projects & Achievements === -->
+                <div class="preview-card" data-goto="projects">
+                    <div class="preview-header">
+                        <i class="fas fa-folder-open preview-icon"></i>
+                        <h3>Projects &amp; Achievements</h3>
+                    </div>
+                    <div class="preview-body">
+                        <!-- Số liệu nhanh -->
+                        <div class="preview-stats">
+                            <span><strong>4+</strong> Labs</span>
+                            <span><strong>2</strong> CTF</span>
+                        </div>
+                        <!-- Preview công cụ tiêu biểu -->
+                        <ul class="preview-list">
+                            <li><i class="fas fa-check"></i> Memory Forensics</li>
+                            <li><i class="fas fa-check"></i> Cisco 3-Tier Network</li>
+                        </ul>
+                    </div>
+                    <div class="preview-footer">
+                        <span class="preview-link">View Details <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+
+                <!-- === PREVIEW CARD 2: Dẫn tới Career Roadmap === -->
+                <div class="preview-card" data-goto="roadmap">
+                    <div class="preview-header">
+                        <i class="fas fa-road preview-icon"></i>
+                        <h3>Career Roadmap</h3>
+                    </div>
+                    <div class="preview-body">
+                        <!-- Thanh tiến độ thu nhỏ -->
+                        <div class="mini-progress">
+                            <div class="mini-progress-label">
+                                <span>SOC Intern</span>
+                                <span>DFIR Specialist</span>
+                            </div>
+                            <div class="mini-progress-bar">
+                                <div class="mini-progress-fill"></div>
+                            </div>
+                        </div>
+                        <p class="preview-desc">From foundation to DFIR Specialist</p>
+                    </div>
+                    <div class="preview-footer">
+                        <span class="preview-link">View Details <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+
+                <!-- === PREVIEW CARD 3: Dẫn tới Contact & Connect === -->
+                <div class="preview-card" data-goto="contact">
+                    <div class="preview-header">
+                        <i class="fas fa-satellite-dish preview-icon"></i>
+                        <h3>Contact &amp; Connect</h3>
+                    </div>
+                    <div class="preview-body">
+                        <!-- Trạng thái sẵn sàng -->
+                        <p class="status-badge">
+                            <span class="status-dot"></span> Open for SOC Internship
+                        </p>
+                        <!-- Nút copy email nhanh tại chỗ -->
+                        <button class="btn-copy-mini" id="copy-email-mini" type="button">
+                            <i class="fas fa-copy"></i> Copy Email
+                        </button>
+                    </div>
+                    <div class="preview-footer">
+                        <span class="preview-link">View Details <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- SECTION 2: PROJECTS & ACHIEVEMENTS (id="projects")       -->
+        <!-- Gồm: nút back, bộ lọc, lưới dự án, lưới chứng chỉ       -->
+        <!-- ======================================================== -->
+        <section id="projects" class="page-section">
+
+            <!-- Nút quay lại Home -->
+            <a href="#" class="back-btn" data-target="home">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+
+            <!-- Tiêu đề section -->
+            <h2 class="section-title">
+                <i class="fas fa-folder-open"></i> Projects &amp; Achievements
+            </h2>
+
+            <!-- ----- PHẦN A: FEATURED PROJECTS & LABS ----- -->
+            <h3 class="subsection-title">
+                <i class="fas fa-flask"></i> Featured Projects &amp; Labs
+            </h3>
+
+            <!-- Thanh lọc danh mục (JS sẽ xử lý ẩn/hiện theo data-category) -->
+            <div class="filter-bar" id="project-filter">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="dfir">DFIR &amp; Forensics</button>
+                <button class="filter-btn" data-filter="network">Network &amp; System</button>
+                <button class="filter-btn" data-filter="crypto">Cryptography</button>
+            </div>
+
+            <!-- Lưới dự án -->
+            <!-- GHI CHÚ: Để thêm dự án mới, copy 1 khối <article class="project-card"> -->
+            <!-- và sửa data-category + nội dung bên trong.                -->
+            <div class="projects-grid">
+
+                <!-- ===== DỰ ÁN 1: Memory & Artifact Forensics ===== -->
+                <article class="project-card" data-category="dfir">
+                    <div class="project-icon"><i class="fas fa-memory"></i></div>
+                    <h4>Memory &amp; Artifact Forensics Investigation</h4>
+                    <p>
+                        Analyzed a Windows memory dump (<code>.vmem</code>) using
+                        <strong>Volatility 3</strong> to extract processes, network
+                        connections, and injected code. Inspected binary file
+                        structures with <strong>HxD</strong>.
+                    </p>
+                    <div class="project-tags">
+                        <span class="tag">Volatility 3</span>
+                        <span class="tag">HxD</span>
+                        <span class="tag">Memory Forensics</span>
+                    </div>
+                </article>
+
+                <!-- ===== DỰ ÁN 2: Enterprise 3-Tier Network ===== -->
+                <article class="project-card" data-category="network">
+                    <div class="project-icon"><i class="fas fa-network-wired"></i></div>
+                    <h4>Enterprise 3-Tier Network Architecture</h4>
+                    <p>
+                        Designed a corporate network on <strong>GNS3 / Cisco</strong>
+                        with VLANs, 802.1Q trunking, ACLs, and
+                        <strong>Windows Server 2022</strong> (AD / DNS / DHCP).
+                    </p>
+                    <div class="project-tags">
+                        <span class="tag">GNS3</span>
+                        <span class="tag">Cisco</span>
+                        <span class="tag">VLAN / ACL</span>
+                        <span class="tag">Windows Server</span>
+                    </div>
+                </article>
+
+                <!-- ===== DỰ ÁN 3: Packet Analysis Lab ===== -->
+                <article class="project-card" data-category="network">
+                    <div class="project-icon"><i class="fas fa-wave-square"></i></div>
+                    <h4>Packet Analysis &amp; Network Troubleshooting Lab</h4>
+                    <p>
+                        Captured and analyzed <strong>ARP</strong> and
+                        <strong>ICMP</strong> packets with Wireshark; configured
+                        static routing and DHCP on Cisco routers.
+                    </p>
+                    <div class="project-tags">
+                        <span class="tag">Wireshark</span>
+                        <span class="tag">ARP / ICMP</span>
+                        <span class="tag">Static Routing</span>
+                        <span class="tag">DHCP</span>
+                    </div>
+                </article>
+
+                <!-- ===== DỰ ÁN 4: Applied Cryptography & LSB Steganography ===== -->
+                <article class="project-card" data-category="crypto">
+                    <div class="project-icon"><i class="fas fa-lock"></i></div>
+                    <h4>Applied Cryptography &amp; LSB Steganography Web App</h4>
+                    <p>
+                        Built a <strong>Python / Flask</strong> app simulating digital
+                        signatures, Diffie-Hellman key exchange (MITM-resistant),
+                        LSB image steganography (PSNR), and Shannon Entropy
+                        measurement.
+                    </p>
+                    <div class="project-tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">Flask</span>
+                        <span class="tag">Diffie-Hellman</span>
+                        <span class="tag">LSB / PSNR</span>
+                    </div>
+                </article>
+
+                <!-- GHI CHÚ TIẾNG VIỆT: Để thêm dự án mới, copy khối <article class="project-card"> ở trên -->
+                <!-- rồi dán xuống dưới, sửa data-category (dfir / network / crypto) và nội dung. -->
+
+            </div>
+
+            <!-- ----- PHẦN B: CERTIFICATIONS & ACHIEVEMENTS ----- -->
+            <h3 class="subsection-title">
+                <i class="fas fa-certificate"></i> Certifications &amp; Achievements
+            </h3>
+
+            <div class="cert-grid">
+
+                <!-- === THẺ CHỨNG CHỈ MẪU: In Progress === -->
+                <!-- GHI CHÚ: Copy thẻ này để thêm chứng chỉ mới. Đổi status-badge nếu đã đạt được. -->
+                <div class="cert-card">
+                    <div class="cert-status in-progress">In Progress</div>
+                    <div class="cert-icon"><i class="fas fa-spinner"></i></div>
+                    <h4>CompTIA Security+</h4>
+                    <p>Foundation-level cybersecurity certification</p>
+                </div>
+
+                <!-- === THẺ CHỨNG CHỈ MẪU: Đã đạt được === -->
+                <!-- GHI CHÚ: Thay đổi nội dung bên dưới cho chứng chỉ thực tế của bạn. -->
+                <div class="cert-card">
+                    <div class="cert-status achieved">Achieved</div>
+                    <div class="cert-icon"><i class="fas fa-award"></i></div>
+                    <h4>picoCTF Participant</h4>
+                    <p>Completed multiple challenges in picoCTF</p>
+                </div>
+
+                <!-- === THẺ CHỨNG CHỈ MẪU: Giải CTF === -->
+                <div class="cert-card">
+                    <div class="cert-status achieved">Achieved</div>
+                    <div class="cert-icon"><i class="fas fa-trophy"></i></div>
+                    <h4>NovaCTF</h4>
+                    <p>Competed in NovaCTF team-based challenges</p>
+                </div>
+
+                <!-- === THẺ CHỨNG CHỈ MẪU: In Progress === -->
+                <div class="cert-card">
+                    <div class="cert-status in-progress">In Progress</div>
+                    <div class="cert-icon"><i class="fas fa-spinner"></i></div>
+                    <h4>OSCP</h4>
+                    <p>Offensive Security Certified Professional</p>
+                </div>
+
+                <!-- GHI CHÚ TIẾNG VIỆT: Để thêm chứng chỉ mới, copy 1 khối <div class="cert-card"> -->
+                <!-- rồi dán xuống dưới. Đổi class "in-progress" thành "achieved" nếu đã đạt. -->
+            </div>
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- SECTION 3: CAREER ROADMAP (id="roadmap")                 -->
+        <!-- Timeline dọc với các đèn LED phát sáng                    -->
+        <!-- ======================================================== -->
+        <section id="roadmap" class="page-section">
+
+            <!-- Nút quay lại Home -->
+            <a href="#" class="back-btn" data-target="home">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+
+            <h2 class="section-title">
+                <i class="fas fa-road"></i> Career Roadmap
+            </h2>
+
+            <!-- Timeline dọc: mỗi phase là 1 mốc -->
+            <div class="timeline">
+
+                <!-- ===== PHASE 1: Current - Foundation ===== -->
+                <div class="timeline-item">
+                    <div class="timeline-dot led-glow"></div>
+                    <div class="timeline-content">
+                        <span class="timeline-phase">Phase 1 &mdash; Current</span>
+                        <h4>Foundation</h4>
+                        <p class="timeline-sub">KMA Information Security Student</p>
+                        <p>
+                            Building solid foundations in Computer Networking,
+                            Linux / Windows operating systems, Cryptography, and
+                            hands-on packet &amp; memory analysis.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- ===== PHASE 2: Next Target ===== -->
+                <div class="timeline-item">
+                    <div class="timeline-dot led-glow"></div>
+                    <div class="timeline-content">
+                        <span class="timeline-phase">Phase 2 &mdash; Next Target</span>
+                        <h4>SOC Analyst Intern</h4>
+                        <p class="timeline-sub">Security Operations Center</p>
+                        <p>
+                            Intern at a Security Operations Center, getting familiar
+                            with SIEM platforms, alert triage, and log analysis.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- ===== PHASE 3: Tier 1 & 2 SOC Analyst ===== -->
+                <div class="timeline-item">
+                    <div class="timeline-dot led-glow"></div>
+                    <div class="timeline-content">
+                        <span class="timeline-phase">Phase 3</span>
+                        <h4>Tier 1 &amp; Tier 2 SOC Analyst</h4>
+                        <p class="timeline-sub">Incident Response &amp; Detection</p>
+                        <p>
+                            Advanced incident classification, Root Cause Analysis
+                            (RCA), and optimization of detection rules.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- ===== PHASE 4: Long-term Goal - DFIR Specialist ===== -->
+                <div class="timeline-item">
+                    <div class="timeline-dot led-glow"></div>
+                    <div class="timeline-content">
+                        <span class="timeline-phase">Phase 4 &mdash; Long-term Goal</span>
+                        <h4>DFIR Specialist</h4>
+                        <p class="timeline-sub">Endpoint &amp; Memory Forensics</p>
+                        <p>
+                            Digital forensics and incident response specialist with
+                            deep expertise in endpoint and memory forensics.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- SECTION 4: CONTACT & CONNECT (id="contact")              -->
+        <!-- Terminal Contact Card + Quick Message Box                 -->
+        <!-- ======================================================== -->
+        <section id="contact" class="page-section">
+
+            <!-- Nút quay lại Home -->
+            <a href="#" class="back-btn" data-target="home">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+
+            <h2 class="section-title">
+                <i class="fas fa-satellite-dish"></i> Contact &amp; Connect
+            </h2>
+
+            <div class="contact-wrapper">
+
+                <!-- ----- TERMINAL CONTACT CARD ----- -->
+                <div class="terminal-card">
+                    <!-- Thanh tiêu đề giả lập terminal -->
+                    <div class="terminal-header">
+                        <span class="terminal-dot red"></span>
+                        <span class="terminal-dot yellow"></span>
+                        <span class="terminal-dot green"></span>
+                        <span class="terminal-title">contact@zaboran:~$</span>
+                    </div>
+
+                    <!-- Nội dung terminal -->
+                    <div class="terminal-body">
+
+                        <!-- Email + nút copy -->
+                        <div class="terminal-line">
+                            <span class="terminal-prompt">$</span>
+                            <span class="terminal-key">email:</span>
+                            <span class="terminal-value">leeddinhfthucws000@gmail.com</span>
+                            <button class="btn-copy" id="copy-email-btn" type="button">
+                                <i class="fas fa-copy"></i> Copy Email
+                            </button>
+                        </div>
+
+                        <!-- GitHub -->
+                        <div class="terminal-line">
+                            <span class="terminal-prompt">$</span>
+                            <span class="terminal-key">github:</span>
+                            <a class="terminal-link" href="https://github.com/leeddinhfthucws000-code" target="_blank" rel="noopener">
+                                github.com/leeddinhfthucws000-code
+                            </a>
+                        </div>
+
+                        <!-- Link tới kho WRITEUP -->
+                        <div class="terminal-line">
+                            <span class="terminal-prompt">$</span>
+                            <span class="terminal-key">writeup:</span>
+                            <a class="terminal-link" href="https://github.com/leeddinhfthucws000-code/WRITEUP" target="_blank" rel="noopener">
+                                github.com/leeddinhfthucws000-code/WRITEUP
+                            </a>
+                        </div>
+
+                        <!-- Vị trí -->
+                        <div class="terminal-line">
+                            <span class="terminal-prompt">$</span>
+                            <span class="terminal-key">location:</span>
+                            <span class="terminal-value">Ho Chi Minh City, Vietnam</span>
+                        </div>
+
+                        <!-- Trạng thái -->
+                        <div class="terminal-line">
+                            <span class="terminal-prompt">$</span>
+                            <span class="terminal-key">status:</span>
+                            <span class="terminal-value status-open">
+                                <span class="status-dot"></span> Open for SOC Internship
+                            </span>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- ----- QUICK MESSAGE BOX ----- -->
+                <!-- Gửi mail qua mailto: với subject + body người dùng nhập -->
+                <div class="message-box">
+                    <h3><i class="fas fa-paper-plane"></i> Quick Message</h3>
+                    <p class="message-hint">Fill in the fields below to open your email client.</p>
+
+                    <!-- Form không có action: JS sẽ xử lý mailto -->
+                    <form id="quick-message-form">
+                        <!-- Tiêu đề email -->
+                        <div class="form-group">
+                            <label for="msg-subject">Subject</label>
+                            <input type="text" id="msg-subject" placeholder="Opportunity / Collaboration" required>
+                        </div>
+
+                        <!-- Nội dung email -->
+                        <div class="form-group">
+                            <label for="msg-body">Message</label>
+                            <textarea id="msg-body" rows="4" placeholder="Write your message here..." required></textarea>
+                        </div>
+
+                        <!-- Nút gửi: mở mailto -->
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-envelope-open-text"></i> Send via Email
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ============================================================ -->
+    <!-- FOOTER: Chân trang                                           -->
+    <!-- ============================================================ -->
+    <footer class="footer">
+        <p>&copy; <span id="current-year"></span> ZaborAn &mdash; Le Dinh Thuc. All rights reserved.</p>
+        <p class="footer-note">
+            <i class="fas fa-shield-halved"></i> Blue Team &amp; Digital Forensics
+        </p>
+    </footer>
+
+    <!-- ============================================================ -->
+    <!-- TOAST THÔNG BÁO: Hiện khi copy email thành công              -->
+    <!-- JS sẽ thêm class "show" để hiển thị                          -->
+    <!-- ============================================================ -->
+    <div id="toast" class="toast" role="status" aria-live="polite">
+        <i class="fas fa-check-circle"></i> <span id="toast-message">Copied!</span>
+    </div>
+
+</body>
+</html>
