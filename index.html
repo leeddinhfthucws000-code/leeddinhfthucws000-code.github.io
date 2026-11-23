@@ -9,6 +9,9 @@
     <!-- ============================================================ -->
     <!-- LIÊN KẾT FILE CSS BÊN NGOÀI                                   -->
     <!-- Chứa toàn bộ style cho trang web (layout, màu sắc, hiệu ứng)  -->
+    <!-- LƯU Ý: Các class mới trong file này (brand-logo, exhibit-*,  -->
+    <!-- tool-chip, empty-placeholder-box, log-entry, ...) cần được   -->
+    <!-- bổ sung style tương ứng trong style.css thì mới hiển thị đẹp -->
     <!-- ============================================================ -->
     <link rel="stylesheet" href="style.css">
 
@@ -42,23 +45,27 @@
     <canvas id="circuit-bg" aria-hidden="true"></canvas>
 
     <!-- ============================================================ -->
-    <!-- LOGO CỐ ĐỊNH GÓC DƯỚI BÊN TRÁI                               -->
+    <!-- LOGO CỐ ĐỊNH GÓC DƯỚI BÊN PHẢI                                -->
+    <!-- Đã chuyển từ góc dưới bên TRÁI sang bên PHẢI theo yêu cầu.    -->
+    <!-- QUAN TRỌNG: vị trí trái/phải do CSS quyết định (thuộc tính    -->
+    <!-- left/right của #floating-logo trong style.css) — hãy sửa     -->
+    <!-- "left" thành "right" trong rule CSS tương ứng để khớp HTML.   -->
     <!-- Khi click vào logo -> JS sẽ chuyển về Home + cuộn lên đầu     -->
-    <!-- Bạn có thể thay logo.png bằng file ảnh thật của bạn           -->
     <!-- ============================================================ -->
     <a href="#" id="floating-logo" aria-label="ZaborAn - Back to Home">
-        <img src="logo.png" alt="ZaborAn Logo">
+        <img src="assets/logo.png" alt="ZaborAn Logo">
     </a>
 
     <!-- ============================================================ -->
     <!-- NAVBAR: Thanh điều hướng trên cùng cố định                    -->
-    <!-- Trái: tên thương hiệu "ZaborAn" (click -> Home)               -->
+    <!-- Trái: logo + tên thương hiệu "ZaborAn" (click -> Home)        -->
     <!-- Phải: 4 nút điều hướng với data-target tương ứng 4 section    -->
     <!-- ============================================================ -->
     <header class="navbar" id="main-navbar">
-        <!-- Tên thương hiệu bên trái -->
+        <!-- Logo + tên thương hiệu bên trái -->
         <a href="#" class="brand" data-target="home">
-            <span class="brand-icon"><i class="fas fa-shield-halved"></i></span>
+            <!-- Đã thay icon khiên Font Awesome bằng logo thật của ZaborAn -->
+            <img src="assets/logo.png" alt="ZaborAn Logo" class="brand-logo">
             <span class="brand-text">ZaborAn</span>
         </a>
 
@@ -70,8 +77,8 @@
             <!-- Nút Projects & Achievements -->
             <a href="#" class="nav-link" data-target="projects">Projects &amp; Achievements</a>
 
-            <!-- Nút Career Roadmap -->
-            <a href="#" class="nav-link" data-target="roadmap">Career Roadmap</a>
+            <!-- Nút Roadmap & Development (đã đổi tên từ "Career Roadmap") -->
+            <a href="#" class="nav-link" data-target="roadmap">Roadmap &amp; Development</a>
 
             <!-- Nút Contact & Connect -->
             <a href="#" class="nav-link" data-target="contact">Contact &amp; Connect</a>
@@ -86,11 +93,15 @@
 
         <!-- ======================================================== -->
         <!-- SECTION 1: HOME (id="home") - Mặc định active            -->
-        <!-- Gồm: Hero giới thiệu + 3 thẻ preview tương tác           -->
+        <!-- Gồm 4 khối dọc: Hero / Focus Areas / Tools / Explore      -->
         <!-- ======================================================== -->
         <section id="home" class="page-section active">
 
-            <!-- ----- PHẦN A: HERO & GIỚI THIỆU BẢN THÂN ----- -->
+            <!-- ======================================================== -->
+            <!-- KHỐI 1 — HERO & GIỚI THIỆU BẢN THÂN                      -->
+            <!-- Giữ nguyên nội dung giới thiệu, chỉ đổi icon avatar      -->
+            <!-- sang logo thật ở bên phải                                 -->
+            <!-- ======================================================== -->
             <div class="hero">
                 <!-- Khối chữ bên trái -->
                 <div class="hero-text">
@@ -142,93 +153,226 @@
                     </div>
                 </div>
 
-                <!-- Khối hình/icon bên phải (có thể thay bằng ảnh thật) -->
+                <!-- Khối hình bên phải: logo thật thay cho icon hacker cũ -->
                 <div class="hero-visual">
                     <div class="hero-avatar">
-                        <i class="fas fa-user-secret"></i>
+                        <img src="assets/logo.png" alt="ZaborAn Emblem">
                     </div>
                 </div>
             </div>
 
-            <!-- ----- PHẦN B: 3 THẺ PREVIEW TƯƠNG TÁC ----- -->
-            <!-- Mỗi thẻ dẫn sang 1 section khác qua data-goto           -->
-            <!-- Bạn có thể sửa nội dung bên trong từng thẻ tùy ý        -->
-            <div class="preview-grid">
+            <!-- ======================================================== -->
+            <!-- KHỐI 2 — "01 FOCUS AREAS"                                -->
+            <!-- Lưới 6 thẻ (3 cột x 2 hàng), mỗi thẻ có nhãn EXHIBIT-XX  -->
+            <!-- ở góc trên để gợi ý phong cách "hồ sơ điều tra"          -->
+            <!-- Đây là nội dung cố định, không cần sample comment thêm   -->
+            <!-- vì danh sách 6 mảng chuyên môn này là cố định.           -->
+            <!-- ======================================================== -->
+            <div class="home-section focus-areas-block">
+                <h2 class="home-block-title">
+                    <span class="block-number">01</span> FOCUS AREAS
+                </h2>
 
-                <!-- === PREVIEW CARD 1: Dẫn tới Projects & Achievements === -->
-                <div class="preview-card" data-goto="projects">
-                    <div class="preview-header">
-                        <i class="fas fa-folder-open preview-icon"></i>
-                        <h3>Projects &amp; Achievements</h3>
+                <div class="exhibit-grid">
+
+                    <!-- EXHIBIT-01: SOC Alert Triage -->
+                    <div class="exhibit-card">
+                        <span class="exhibit-tag">EXHIBIT-01</span>
+                        <div class="exhibit-icon"><i class="fas fa-bell"></i></div>
+                        <h4>SOC Alert Triage</h4>
+                        <p>Alert analysis, priority triaging, and proactive defense.</p>
                     </div>
-                    <div class="preview-body">
-                        <!-- Số liệu nhanh -->
-                        <div class="preview-stats">
-                            <span><strong>4+</strong> Labs</span>
-                            <span><strong>2</strong> CTF</span>
-                        </div>
-                        <!-- Preview công cụ tiêu biểu -->
-                        <ul class="preview-list">
-                            <li><i class="fas fa-check"></i> Memory Forensics</li>
-                            <li><i class="fas fa-check"></i> Cisco 3-Tier Network</li>
-                        </ul>
+
+                    <!-- EXHIBIT-02: DFIR -->
+                    <div class="exhibit-card">
+                        <span class="exhibit-tag">EXHIBIT-02</span>
+                        <div class="exhibit-icon"><i class="fas fa-magnifying-glass"></i></div>
+                        <h4>DFIR</h4>
+                        <p>Digital Forensics and Incident Response &mdash; collecting and analyzing digital evidence.</p>
                     </div>
-                    <div class="preview-footer">
-                        <span class="preview-link">View Details <i class="fas fa-arrow-right"></i></span>
+
+                    <!-- EXHIBIT-03: Malware Analysis -->
+                    <div class="exhibit-card">
+                        <span class="exhibit-tag">EXHIBIT-03</span>
+                        <div class="exhibit-icon"><i class="fas fa-bug"></i></div>
+                        <h4>Malware Analysis</h4>
+                        <p>Basic malware analysis: behavior, indicators, static/dynamic analysis.</p>
                     </div>
+
+                    <!-- EXHIBIT-04: Windows Forensics -->
+                    <div class="exhibit-card">
+                        <span class="exhibit-tag">EXHIBIT-04</span>
+                        <div class="exhibit-icon"><i class="fas fa-clock-rotate-left"></i></div>
+                        <h4>Windows Forensics</h4>
+                        <p>Windows system artifacts: registry, event logs, filesystem timeline.</p>
+                    </div>
+
+                    <!-- EXHIBIT-05: Network Traffic Analysis -->
+                    <div class="exhibit-card">
+                        <span class="exhibit-tag">EXHIBIT-05</span>
+                        <div class="exhibit-icon"><i class="fas fa-wave-square"></i></div>
+                        <h4>Network Traffic Analysis</h4>
+                        <p>Reading and analyzing network traffic, detecting anomalies.</p>
+                    </div>
+
+                    <!-- EXHIBIT-06: CTF & Practical Labs -->
+                    <div class="exhibit-card">
+                        <span class="exhibit-tag">EXHIBIT-06</span>
+                        <div class="exhibit-icon"><i class="fas fa-flag"></i></div>
+                        <h4>CTF &amp; Practical Labs</h4>
+                        <p>CTF writeups and practical labs to hone investigative thinking and documentation skills.</p>
+                    </div>
+
                 </div>
-
-                <!-- === PREVIEW CARD 2: Dẫn tới Career Roadmap === -->
-                <div class="preview-card" data-goto="roadmap">
-                    <div class="preview-header">
-                        <i class="fas fa-road preview-icon"></i>
-                        <h3>Career Roadmap</h3>
-                    </div>
-                    <div class="preview-body">
-                        <!-- Thanh tiến độ thu nhỏ -->
-                        <div class="mini-progress">
-                            <div class="mini-progress-label">
-                                <span>SOC Intern</span>
-                                <span>DFIR Specialist</span>
-                            </div>
-                            <div class="mini-progress-bar">
-                                <div class="mini-progress-fill"></div>
-                            </div>
-                        </div>
-                        <p class="preview-desc">From foundation to DFIR Specialist</p>
-                    </div>
-                    <div class="preview-footer">
-                        <span class="preview-link">View Details <i class="fas fa-arrow-right"></i></span>
-                    </div>
-                </div>
-
-                <!-- === PREVIEW CARD 3: Dẫn tới Contact & Connect === -->
-                <div class="preview-card" data-goto="contact">
-                    <div class="preview-header">
-                        <i class="fas fa-satellite-dish preview-icon"></i>
-                        <h3>Contact &amp; Connect</h3>
-                    </div>
-                    <div class="preview-body">
-                        <!-- Trạng thái sẵn sàng -->
-                        <p class="status-badge">
-                            <span class="status-dot"></span> Open for SOC Internship
-                        </p>
-                        <!-- Nút copy email nhanh tại chỗ -->
-                        <button class="btn-copy-mini" id="copy-email-mini" type="button">
-                            <i class="fas fa-copy"></i> Copy Email
-                        </button>
-                    </div>
-                    <div class="preview-footer">
-                        <span class="preview-link">View Details <i class="fas fa-arrow-right"></i></span>
-                    </div>
-                </div>
-
             </div>
+
+            <!-- ======================================================== -->
+            <!-- KHỐI 3 — "02 TOOLS & TECHNICAL SKILLS"                   -->
+            <!-- Chia 2 nhóm: Ngôn ngữ lập trình / Công cụ Forensics-OS   -->
+            <!-- ======================================================== -->
+            <div class="home-section tools-skills-block">
+                <h2 class="home-block-title">
+                    <span class="block-number">02</span> TOOLS &amp; TECHNICAL SKILLS
+                </h2>
+
+                <!-- ----- NHÓM A: Ngôn ngữ lập trình & Scripting ----- -->
+                <h3 class="tools-group-title">Programming &amp; Scripting Languages</h3>
+                <div class="tools-grid">
+                    <div class="tool-chip"><i class="fas fa-code"></i> C++</div>
+                    <div class="tool-chip"><i class="fab fa-python"></i> Python</div>
+                    <div class="tool-chip"><i class="fas fa-terminal"></i> Bash (Terminal Scripting)</div>
+
+                    <!--
+                    GHI CHÚ: Để thêm 1 ngôn ngữ lập trình mới vào đây,
+                    copy 1 thẻ <div class="tool-chip"> ở trên rồi dán xuống dưới,
+                    sau đó đổi icon Font Awesome (vd: fab fa-java cho Java,
+                    fab fa-js cho JavaScript, fab fa-golang cho Go) và đổi tên
+                    ngôn ngữ tương ứng.
+                    -->
+                </div>
+
+                <!-- ----- NHÓM B: Công cụ Forensics, OS & Security ----- -->
+                <h3 class="tools-group-title">Forensics, OS &amp; Security Tools</h3>
+                <div class="tools-grid">
+                    <div class="tool-chip">
+                        <i class="fas fa-memory"></i> Volatility 3
+                        <span class="tool-note">(Memory Forensics)</span>
+                    </div>
+                    <div class="tool-chip">
+                        <i class="fas fa-magnifying-glass"></i> Autopsy
+                        <span class="tool-note">(Digital Forensics)</span>
+                    </div>
+                    <div class="tool-chip">
+                        <i class="fas fa-network-wired"></i> Wireshark
+                        <span class="tool-note">(Packet Analysis)</span>
+                    </div>
+                    <div class="tool-chip">
+                        <i class="fab fa-linux"></i> Linux
+                        <span class="tool-note">(Ubuntu / Kali)</span>
+                    </div>
+                    <div class="tool-chip">
+                        <i class="fab fa-windows"></i> Windows
+                        <span class="tool-note">(Internals &amp; Event Logs)</span>
+                    </div>
+
+                    <!--
+                    GHI CHÚ: Để thêm 1 công cụ mới vào nhóm này, copy 1 thẻ
+                    <div class="tool-chip"> ở trên rồi dán xuống dưới. Đổi icon
+                    Font Awesome phù hợp, tên công cụ, và phần ghi chú trong
+                    <span class="tool-note"> (nếu cần — không bắt buộc).
+                    -->
+                </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- KHỐI 4 — "03 EXPLORE SECTIONS"                           -->
+            <!-- 3 thẻ preview dẫn nhanh sang 3 mục còn lại, tên khớp      -->
+            <!-- 100% với nhãn trên Navbar                                 -->
+            <!-- ======================================================== -->
+            <div class="home-section explore-sections-block">
+                <h2 class="home-block-title">
+                    <span class="block-number">03</span> EXPLORE SECTIONS
+                </h2>
+
+                <div class="preview-grid">
+
+                    <!-- === PREVIEW CARD 1: Dẫn tới Projects & Achievements === -->
+                    <div class="preview-card" data-goto="projects">
+                        <div class="preview-header">
+                            <i class="fas fa-folder-open preview-icon"></i>
+                            <h3>Projects &amp; Achievements</h3>
+                        </div>
+                        <div class="preview-body">
+                            <!-- Số liệu nhanh -->
+                            <div class="preview-stats">
+                                <span><strong>4+</strong> Labs</span>
+                                <span><strong>2</strong> CTF</span>
+                            </div>
+                            <!-- Preview công cụ tiêu biểu -->
+                            <ul class="preview-list">
+                                <li><i class="fas fa-check"></i> Memory Forensics</li>
+                                <li><i class="fas fa-check"></i> Cisco 3-Tier Network</li>
+                            </ul>
+                        </div>
+                        <div class="preview-footer">
+                            <span class="preview-link">View Details <i class="fas fa-arrow-right"></i></span>
+                        </div>
+                    </div>
+
+                    <!-- === PREVIEW CARD 2: Dẫn tới Roadmap & Development (đã đổi tên) === -->
+                    <div class="preview-card" data-goto="roadmap">
+                        <div class="preview-header">
+                            <i class="fas fa-road preview-icon"></i>
+                            <h3>Roadmap &amp; Development</h3>
+                        </div>
+                        <div class="preview-body">
+                            <!-- Thanh tiến độ thu nhỏ -->
+                            <div class="mini-progress">
+                                <div class="mini-progress-label">
+                                    <span>SOC Intern</span>
+                                    <span>DFIR Specialist</span>
+                                </div>
+                                <div class="mini-progress-bar">
+                                    <div class="mini-progress-fill"></div>
+                                </div>
+                            </div>
+                            <p class="preview-desc">From foundation to DFIR Specialist</p>
+                        </div>
+                        <div class="preview-footer">
+                            <span class="preview-link">View Details <i class="fas fa-arrow-right"></i></span>
+                        </div>
+                    </div>
+
+                    <!-- === PREVIEW CARD 3: Dẫn tới Contact & Connect === -->
+                    <div class="preview-card" data-goto="contact">
+                        <div class="preview-header">
+                            <i class="fas fa-satellite-dish preview-icon"></i>
+                            <h3>Contact &amp; Connect</h3>
+                        </div>
+                        <div class="preview-body">
+                            <!-- Trạng thái hiện tại: đã đổi từ "Open for SOC Internship" -->
+                            <!-- sang "Learning & Developing Skills" theo yêu cầu mới     -->
+                            <p class="status-badge">
+                                <span class="status-dot"></span> Learning &amp; Developing Skills
+                            </p>
+                            <!-- Nút copy email nhanh tại chỗ -->
+                            <button class="btn-copy-mini" id="copy-email-mini" type="button">
+                                <i class="fas fa-copy"></i> Copy Email
+                            </button>
+                        </div>
+                        <div class="preview-footer">
+                            <span class="preview-link">View Details <i class="fas fa-arrow-right"></i></span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
         </section>
 
         <!-- ======================================================== -->
         <!-- SECTION 2: PROJECTS & ACHIEVEMENTS (id="projects")       -->
-        <!-- Gồm: nút back, bộ lọc, lưới dự án, lưới chứng chỉ       -->
+        <!-- Gồm: nút back, bộ lọc, lưới dự án, khung chờ chứng chỉ   -->
         <!-- ======================================================== -->
         <section id="projects" class="page-section">
 
@@ -339,50 +483,64 @@
                 <i class="fas fa-certificate"></i> Certifications &amp; Achievements
             </h3>
 
-            <div class="cert-grid">
-
-                <!-- === THẺ CHỨNG CHỈ MẪU: In Progress === -->
-                <!-- GHI CHÚ: Copy thẻ này để thêm chứng chỉ mới. Đổi status-badge nếu đã đạt được. -->
-                <div class="cert-card">
-                    <div class="cert-status in-progress">In Progress</div>
-                    <div class="cert-icon"><i class="fas fa-spinner"></i></div>
-                    <h4>CompTIA Security+</h4>
-                    <p>Foundation-level cybersecurity certification</p>
-                </div>
-
-                <!-- === THẺ CHỨNG CHỈ MẪU: Đã đạt được === -->
-                <!-- GHI CHÚ: Thay đổi nội dung bên dưới cho chứng chỉ thực tế của bạn. -->
-                <div class="cert-card">
-                    <div class="cert-status achieved">Achieved</div>
-                    <div class="cert-icon"><i class="fas fa-award"></i></div>
-                    <h4>picoCTF Participant</h4>
-                    <p>Completed multiple challenges in picoCTF</p>
-                </div>
-
-                <!-- === THẺ CHỨNG CHỈ MẪU: Giải CTF === -->
-                <div class="cert-card">
-                    <div class="cert-status achieved">Achieved</div>
-                    <div class="cert-icon"><i class="fas fa-trophy"></i></div>
-                    <h4>NovaCTF</h4>
-                    <p>Competed in NovaCTF team-based challenges</p>
-                </div>
-
-                <!-- === THẺ CHỨNG CHỈ MẪU: In Progress === -->
-                <div class="cert-card">
-                    <div class="cert-status in-progress">In Progress</div>
-                    <div class="cert-icon"><i class="fas fa-spinner"></i></div>
-                    <h4>OSCP</h4>
-                    <p>Offensive Security Certified Professional</p>
-                </div>
-
-                <!-- GHI CHÚ TIẾNG VIỆT: Để thêm chứng chỉ mới, copy 1 khối <div class="cert-card"> -->
-                <!-- rồi dán xuống dưới. Đổi class "in-progress" thành "achieved" nếu đã đạt. -->
+            <!-- Hiện tại chưa có chứng chỉ nào -> hiển thị khung chờ viền nét đứt -->
+            <!-- thay vì để trống hoặc hiển thị dữ liệu mẫu giả.                   -->
+            <div class="empty-placeholder-box">
+                <i class="fas fa-box-archive placeholder-icon"></i>
+                <p>No certifications added yet &mdash; Currently building hands-on labs &amp; foundational skills.</p>
             </div>
+
+            <!--
+            =====================================================================
+             MẪU THẺ CHỨNG CHỈ (CERT CARD) - DÙNG KHI ĐẠT ĐƯỢC CHỨNG CHỈ ĐẦU TIÊN
+             Hướng dẫn sử dụng:
+               1. Khi đạt (hoặc đang học) 1 chứng chỉ, hãy MỞ comment đoạn code
+                  bên dưới (xóa cặp ký tự "<!--" và "-->
+            " bao quanh toàn khối).
+            2. Trong mỗi <div class="cert-card">
+                , sửa:
+                - class="in-progress" hoặc "achieved" trong <div class="cert-status">
+                    tùy theo trạng thái thật (đang học / đã đạt được).
+                    - Tên chứng chỉ trong thẻ <h4>
+                        .
+                        - Mô tả ngắn gọn 1 dòng trong thẻ <p>
+                            .
+                            - Icon trong <div class="cert-icon">
+                                (tham khảo thêm icon tại
+                                Font Awesome, ví dụ fa-award, fa-certificate, fa-spinner...).
+                                3. Muốn thêm chứng chỉ thứ 2, thứ 3,... chỉ cần copy thêm 1 khối
+                                <div class="cert-card">
+                                    và dán vào bên trong <div class="cert-grid">
+                                        .
+                                        4. Sau khi đã có ít nhất 1 chứng chỉ thật, hãy XÓA khung
+                                        "empty-placeholder-box" ở trên để tránh hiển thị trùng lặp.
+                                        =====================================================================
+
+                                        <div class="cert-grid">
+
+                                            <div class="cert-card">
+                                                <div class="cert-status in-progress">In Progress</div>
+                                                <div class="cert-icon"><i class="fas fa-spinner"></i></div>
+                                                <h4>Tên chứng chỉ (vd: CompTIA Security+)</h4>
+                                                <p>Mô tả ngắn gọn về chứng chỉ này</p>
+                                            </div>
+
+                                            <div class="cert-card">
+                                                <div class="cert-status achieved">Achieved</div>
+                                                <div class="cert-icon"><i class="fas fa-award"></i></div>
+                                                <h4>Tên chứng chỉ (vd: picoCTF Participant)</h4>
+                                                <p>Mô tả ngắn gọn về chứng chỉ này</p>
+                                            </div>
+
+                                        </div>
+                                        -->
         </section>
 
         <!-- ======================================================== -->
-        <!-- SECTION 3: CAREER ROADMAP (id="roadmap")                 -->
-        <!-- Timeline dọc với các đèn LED phát sáng                    -->
+        <!-- SECTION 3: ROADMAP & DEVELOPMENT (id="roadmap")          -->
+        <!-- Đã đổi tên từ "Career Roadmap" theo yêu cầu.              -->
+        <!-- Phần A: Career Orientation (timeline 4 giai đoạn)         -->
+        <!-- Phần B: Learning Log & Research Notes (nhật ký học tập)   -->
         <!-- ======================================================== -->
         <section id="roadmap" class="page-section">
 
@@ -392,8 +550,13 @@
             </a>
 
             <h2 class="section-title">
-                <i class="fas fa-road"></i> Career Roadmap
+                <i class="fas fa-road"></i> Roadmap &amp; Development
             </h2>
+
+            <!-- ----- PHẦN A: CAREER ORIENTATION (Timeline định hướng nghề nghiệp) ----- -->
+            <h3 class="subsection-title">
+                <i class="fas fa-compass"></i> Career Orientation
+            </h3>
 
             <!-- Timeline dọc: mỗi phase là 1 mốc -->
             <div class="timeline">
@@ -456,11 +619,57 @@
                 </div>
 
             </div>
+
+            <!-- ----- PHẦN B: LEARNING LOG & RESEARCH NOTES (Nhật ký học tập) ----- -->
+            <h3 class="subsection-title">
+                <i class="fas fa-book-open"></i> Learning Log &amp; Research Notes
+            </h3>
+
+            <!-- Khu vực này dùng để lưu lại quá trình học tập theo từng mốc thời  -->
+            <!-- gian, kèm link bài viết hoặc file tài liệu đính kèm. Hiện tại     -->
+            <!-- chưa có mục nào nên hiển thị khung chờ gọn gàng bên dưới.         -->
+            <div class="empty-placeholder-box">
+                <i class="fas fa-pen-to-square placeholder-icon"></i>
+                <p>No entries yet &mdash; Learning log and research notes will appear here over time.</p>
+            </div>
+
+            <!--
+            =====================================================================
+             MẪU "LEARNING LOG ENTRY" - COPY ĐOẠN CODE DƯỚI ĐÂY RA KHỎI COMMENT
+             MỖI KHI MUỐN GHI LẠI 1 MỐC HỌC TẬP / 1 BÀI NGHIÊN CỨU MỚI
+             Hướng dẫn điền từng phần:
+               - [Date]    : Điền thời gian học, ví dụ "November 2026".
+               - [Title]   : Điền chủ đề đã học, ví dụ "Windows Event Log Basics".
+               - [Summary] : Tóm tắt ngắn gọn 1-2 câu nội dung đã học được,
+                              hoặc kết quả rút ra từ quá trình nghiên cứu.
+               - href      : Dán đường dẫn để mở bài viết / tài liệu, có thể là:
+                              + Link bài viết online, ví dụ:
+                                href="https://yourblog.com/windows-event-log"
+                              + Hoặc đường dẫn tới file đã lưu trong thư mục
+                                assets/notes/, ví dụ:
+                                href="assets/notes/windows-event-log.pdf"
+             Mỗi mục mới là 1 khối <div class="log-entry">, có thể lặp lại và
+             sắp xếp theo thứ tự thời gian mong muốn bên trong <div class="learning-log">.
+            =====================================================================
+
+            <div class="learning-log">
+
+                <div class="log-entry">
+                    <span class="log-date">[Date]</span>
+                    <h4 class="log-title">[Title]</h4>
+                    <p class="log-summary">[Summary]</p>
+                    <a class="log-link" href="link-bai-viet" target="_blank" rel="noopener">
+                        Read More <i class="fas fa-arrow-up-right-from-square"></i>
+                    </a>
+                </div>
+
+            </div>
+            -->
         </section>
 
         <!-- ======================================================== -->
         <!-- SECTION 4: CONTACT & CONNECT (id="contact")              -->
-        <!-- Terminal Contact Card + Quick Message Box                 -->
+        <!-- Terminal Contact Card + Quick Message Box (FormSubmit)    -->
         <!-- ======================================================== -->
         <section id="contact" class="page-section">
 
@@ -507,15 +716,7 @@
                             </a>
                         </div>
 
-                        <!-- Link tới kho WRITEUP -->
-                        <div class="terminal-line">
-                            <span class="terminal-prompt">$</span>
-                            <span class="terminal-key">writeup:</span>
-                            <a class="terminal-link" href="https://github.com/leeddinhfthucws000-code/WRITEUP" target="_blank" rel="noopener">
-                                github.com/leeddinhfthucws000-code/WRITEUP
-                            </a>
-                        </div>
-
+                        <!-- Dòng "writeup" đã được xóa bỏ hoàn toàn theo yêu cầu -->
                         <!-- Vị trí -->
                         <div class="terminal-line">
                             <span class="terminal-prompt">$</span>
@@ -523,12 +724,13 @@
                             <span class="terminal-value">Ho Chi Minh City, Vietnam</span>
                         </div>
 
-                        <!-- Trạng thái -->
+                        <!-- Trạng thái: đã đổi từ "Open for SOC Internship" -->
+                        <!-- sang "Learning & Developing Skills"             -->
                         <div class="terminal-line">
                             <span class="terminal-prompt">$</span>
                             <span class="terminal-key">status:</span>
                             <span class="terminal-value status-open">
-                                <span class="status-dot"></span> Open for SOC Internship
+                                <span class="status-dot"></span> Learning &amp; Developing Skills
                             </span>
                         </div>
 
@@ -536,26 +738,52 @@
                 </div>
 
                 <!-- ----- QUICK MESSAGE BOX ----- -->
-                <!-- Gửi mail qua mailto: với subject + body người dùng nhập -->
+                <!-- Đã chuyển từ gửi qua mailto: (client-side) sang gửi trực tiếp  -->
+                <!-- lên Gmail qua dịch vụ FormSubmit (server-side, không cần mở   -->
+                <!-- ứng dụng email của người dùng).                                -->
                 <div class="message-box">
                     <h3><i class="fas fa-paper-plane"></i> Quick Message</h3>
-                    <p class="message-hint">Fill in the fields below to open your email client.</p>
+                    <p class="message-hint">Fill in the fields below and your message will be sent directly.</p>
 
-                    <!-- Form không có action: JS sẽ xử lý mailto -->
-                    <form id="quick-message-form">
-                        <!-- Tiêu đề email -->
+                    <!--
+                    LƯU Ý QUAN TRỌNG CHO SCRIPT.JS:
+                    Nếu file script.js hiện đang có đoạn code JS bắt sự kiện
+                    "submit" của form #quick-message-form (gọi event.preventDefault()
+                    để tự dựng link mailto:), bạn cần XÓA đoạn code đó đi.
+                    Vì bây giờ form sẽ tự gửi dữ liệu lên FormSubmit bằng đúng cơ chế
+                    POST chuẩn của HTML (thuộc tính action + method bên dưới),
+                    không cần và không nên bị JS can thiệp/chặn lại nữa.
+                    -->
+                    <form id="quick-message-form" action="https://formsubmit.co/leeddinhfthucws000@gmail.com" method="POST">
+
+                        <!-- Email người gửi - bắt buộc nhập để bạn có thể trả lời lại -->
+                        <div class="form-group">
+                            <label for="msg-email">Your Email</label>
+                            <input type="email" id="msg-email" name="email" placeholder="your.email@example.com" required>
+                        </div>
+
+                        <!-- Tiêu đề email: name="_subject" là cú pháp riêng của    -->
+                        <!-- FormSubmit, giúp email bạn nhận được có đúng tiêu đề    -->
+                        <!-- mà người gửi đã nhập.                                    -->
                         <div class="form-group">
                             <label for="msg-subject">Subject</label>
-                            <input type="text" id="msg-subject" placeholder="Opportunity / Collaboration" required>
+                            <input type="text" id="msg-subject" name="_subject" placeholder="Topic / Collaboration" required>
                         </div>
 
-                        <!-- Nội dung email -->
+                        <!-- Nội dung tin nhắn -->
                         <div class="form-group">
                             <label for="msg-body">Message</label>
-                            <textarea id="msg-body" rows="4" placeholder="Write your message here..." required></textarea>
+                            <textarea id="msg-body" name="message" rows="4" placeholder="Write your message here..." required></textarea>
                         </div>
 
-                        <!-- Nút gửi: mở mailto -->
+                        <!-- Cấu hình ẩn của FormSubmit:                             -->
+                        <!-- _captcha=false  -> tắt bước xác nhận captcha khi gửi     -->
+                        <!-- _template=table -> định dạng email nhận được dạng bảng,  -->
+                        <!--                    dễ đọc hơn thay vì văn bản thô        -->
+                        <input type="hidden" name="_captcha" value="false">
+                        <input type="hidden" name="_template" value="table">
+
+                        <!-- Nút gửi: form sẽ POST thẳng lên FormSubmit, không cần JS -->
                         <button type="submit" class="btn-primary">
                             <i class="fas fa-envelope-open-text"></i> Send via Email
                         </button>

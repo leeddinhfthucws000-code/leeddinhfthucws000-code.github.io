@@ -1,656 +1,462 @@
-/* ================================================================
-   ZABORAN — CYBERSECURITY PORTFOLIO
-   File: script.js
-   Mô tả: Toàn bộ logic tương tác cho trang portfolio
-   Bao gồm: chuyển tab, canvas nền mạch điện, typing effect,
-            lọc dự án, copy email, xử lý form mailto.
-   ================================================================ */
+/* ================================================================== */
+/*  ZABORAN — CYBERSECURITY PORTFOLIO                                  */
+/*  File: script.js                                                    */
+/*  Toàn bộ chú thích trong file này viết bằng Tiếng Việt, giải thích   */
+/*  rõ mục đích + cách hoạt động của từng khối code.                    */
+/*                                                                      */
+/*  LƯU Ý: file này được load bằng <script src="script.js" defer>      */
+/*  trong index.html, nên tại thời điểm các dòng code bên dưới chạy,   */
+/*  toàn bộ DOM đã được trình duyệt parse xong -> có thể truy vấn       */
+/*  phần tử (document.querySelector...) ngay mà KHÔNG cần bọc thêm     */
+/*  sự kiện "DOMContentLoaded".                                        */
+/* ================================================================== */
 
-/* ----------------------------------------------------------------
-   0. KHỞI TẠO CHUNG
-   Chờ DOM load xong rồi mới chạy toàn bộ logic.
-   ---------------------------------------------------------------- */
-document.addEventListener('DOMContentLoaded', function () {
 
-    /* ============================================================
-       1. HỆ THỐNG CHUYỂN ĐỔI GIỮA 4 MỤC (TAB/SECTION)
-       ============================================================ */
+/* ================================================================== */
+/*  1. HỆ THỐNG CHUYỂN ĐỔI SECTION                                     */
+/*  (Home / Projects & Achievements / Roadmap & Development / Contact) */
+/* ================================================================== */
 
-    /**
-     * Hàm dùng chung để chuyển sang một section bất kỳ.
-     * @param {string} targetId - ID của section cần hiển thị
-     *                            (home | projects | roadmap | contact)
-     *
-     * Các bước thực hiện:
-     *   1. Ẩn tất cả .page-section (bỏ class active)
-     *   2. Hiển thị section có id === targetId (thêm class active)
-     *   3. Cập nhật trạng thái active cho nút navbar tương ứng
-     *   4. Cuộn mượt lên đầu trang
-     */
-    function switchSection(targetId) {
-        // --- Bước 1: Lấy tất cả section và ẩn hết ---
-        const allSections = document.querySelectorAll('.page-section');
-        allSections.forEach(function (section) {
-            section.classList.remove('active');
-        });
-
-        // --- Bước 2: Tìm section đích và hiển thị ---
-        const targetSection = document.getElementById(targetId);
-        if (targetSection) {
-            targetSection.classList.add('active');
-        }
-
-        // --- Bước 3: Cập nhật trạng thái active trên navbar ---
-        const allNavLinks = document.querySelectorAll('.nav-link');
-        allNavLinks.forEach(function (link) {
-            // Nếu data-target của nút trùng với targetId -> active
-            if (link.getAttribute('data-target') === targetId) {
-                link.classList.add('active');
-            } else {
-                link.classList.remove('active');
-            }
-        });
-
-        // --- Bước 4: Cuộn mượt lên đầu trang ---
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    /* ------------------------------------------------------------
-       1.1. Gắn sự kiện cho các nút điều hướng
-       Bao gồm:
-         - Nút navbar ([data-target])
-         - Thẻ preview & View Details ([data-goto])
-         - Nút Back to Home ([data-target])
-         - Logo cố định (#floating-logo)
-         - Tên thương hiệu ZaborAn (.brand)
-       ------------------------------------------------------------ */
-
-    // --- Nhóm 1: Mọi phần tử có thuộc tính data-target ---
-    // (navbar links, brand, back buttons)
-    const dataTargetElements = document.querySelectorAll('[data-target]');
-    dataTargetElements.forEach(function (el) {
-        el.addEventListener('click', function (event) {
-            event.preventDefault(); // Ngăn hành vi mặc định của thẻ <a>
-            const target = el.getAttribute('data-target');
-            switchSection(target);
-        });
+/**
+ * Chuyển trang sang đúng section có id = targetId, đồng thời:
+ *   - Ẩn hết các section còn lại (bỏ class "active")
+ *   - Cập nhật trạng thái "active" cho link tương ứng trên Navbar
+ *   - Cuộn mượt (smooth scroll) lên đầu trang
+ *
+ * @param {string} targetId - id của section muốn hiển thị
+ *                            ("home" | "projects" | "roadmap" | "contact")
+ */
+function switchSection(targetId) {
+    // Chỉ section có id trùng targetId mới được gắn class "active"
+    // (CSS trong style.css đã quy định .page-section.active { display: block })
+    document.querySelectorAll('.page-section').forEach(function (section) {
+        section.classList.toggle('active', section.id === targetId);
     });
 
-    // --- Nhóm 2: Các thẻ preview và nút View Details có data-goto ---
-    const dataGotoElements = document.querySelectorAll('[data-goto]');
-    dataGotoElements.forEach(function (el) {
-        el.addEventListener('click', function (event) {
+    // Đồng bộ trạng thái "đang chọn" trên thanh Navbar
+    document.querySelectorAll('.nav-link[data-target]').forEach(function (link) {
+        link.classList.toggle('active', link.dataset.target === targetId);
+    });
+
+    // Luôn cuộn mượt lên đầu trang mỗi khi chuyển sang section mới,
+    // tránh tình trạng người dùng đang cuộn dở section cũ rồi bị "rớt"
+    // giữa chừng ở section mới.
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/**
+ * Gắn sự kiện click cho TẤT CẢ các phần tử có thể dùng để điều hướng:
+ *   - Link trên Navbar (data-target)
+ *   - Logo thương hiệu "ZaborAn" trên Navbar (data-target)
+ *   - Nút "Back to Home" ở 3 section con (data-target)
+ *   - 3 thẻ preview ở trang Home (data-goto)
+ *   - Logo nổi cố định góc dưới bên phải (#floating-logo)
+ */
+function initNavigation() {
+    // Nhóm 1: mọi phần tử dùng chung thuộc tính data-target
+    // (nav-link, brand logo, back-btn đều thuộc nhóm này)
+    document.querySelectorAll('[data-target]').forEach(function (element) {
+        element.addEventListener('click', function (event) {
+            // Các phần tử này đều là thẻ <a href="#">, phải preventDefault
+            // để tránh trình duyệt nhảy lên đầu trang kèm dấu "#" trên URL
             event.preventDefault();
-            const target = el.getAttribute('data-goto');
-            switchSection(target);
+            switchSection(element.dataset.target);
         });
     });
 
-    // --- Nhóm 3: Logo cố định góc dưới bên trái ---
-    // Luôn đưa về Home và cuộn lên đầu trang
-    const floatingLogo = document.getElementById('floating-logo');
+    // Nhóm 2: 3 thẻ preview ở Home dùng thuộc tính data-goto (không phải thẻ <a>)
+    document.querySelectorAll('.preview-card[data-goto]').forEach(function (card) {
+        card.addEventListener('click', function () {
+            switchSection(card.dataset.goto);
+        });
+    });
+
+    // Nhóm 3: logo nổi cố định góc dưới bên phải -> luôn luôn về Home
+    // (phần tử này không có data-target riêng vì chức năng của nó cố định,
+    // không bao giờ đổi sang section khác)
+    var floatingLogo = document.getElementById('floating-logo');
     if (floatingLogo) {
         floatingLogo.addEventListener('click', function (event) {
             event.preventDefault();
             switchSection('home');
         });
     }
+}
 
-    /* ============================================================
-       2. HIỆU ỨNG NỀN MẠCH ĐIỆN TỬ LED (#circuit-bg)
-       ============================================================ */
 
-    /**
-     * Khởi tạo và vẽ mạng lưới mạch điện tử PCB trên canvas.
-     * - Các đường mạch màu xám cực tối, góc vuông 90 độ.
-     * - Các xung LED trắng/bạc chạy dọc theo đường mạch.
-     * - Tối ưu bằng requestAnimationFrame.
-     * - Tự điều chỉnh kích thước khi resize.
-     */
-    (function initCircuitBackground() {
-        const canvas = document.getElementById('circuit-bg');
-        if (!canvas) return;
+/* ================================================================== */
+/*  2. HIỆU ỨNG NỀN "MẠCH ĐIỆN TỬ" TRÊN CANVAS (#circuit-bg)           */
+/*                                                                      */
+/*  Nguyên lý hoạt động:                                                */
+/*    - Tạo ra 1 tập hợp các "nút mạch" (node) nằm rải rác, mỗi nút     */
+/*      tự di chuyển chậm rãi theo 1 vận tốc ngẫu nhiên.                */
+/*    - Ở mỗi khung hình (frame), nếu 2 nút nằm đủ gần nhau thì vẽ 1    */
+/*      đường nối mờ giữa chúng -> tạo cảm giác giống sơ đồ mạch PCB    */
+/*      đang "chạy" trên nền đen.                                      */
+/*    - Toàn bộ dùng tông màu trắng/xám để khớp với theme LED của       */
+/*      trang (không dùng màu sắc sặc sỡ).                             */
+/* ================================================================== */
+function initCircuitBackground() {
+    var canvas = document.getElementById('circuit-bg');
+    if (!canvas) return;
 
-        const ctx = canvas.getContext('2d');
+    var ctx = canvas.getContext('2d');
+    var width, height, nodes;
 
-        // --- Biến lưu kích thước canvas ---
-        let width = 0;
-        let height = 0;
+    // Các thông số điều chỉnh hiệu ứng - gom lại 1 chỗ cho dễ tinh chỉnh sau này
+    var CONFIG = {
+        nodeCount: 70,        // Số lượng nút mạch trên màn hình lớn (desktop)
+        maxDistance: 150,     // Khoảng cách tối đa (px) để 2 nút được nối đường
+        nodeSpeed: 0.25,      // Tốc độ trôi của mỗi nút mạch
+        nodeRadius: 1.6       // Bán kính chấm tròn vẽ tại mỗi nút
+    };
 
-        // --- Mảng chứa các đường mạch (mỗi đường là 1 mảng điểm) ---
-        let traces = [];
+    // Tính lại kích thước canvas cho khớp đúng với kích thước cửa sổ hiện tại
+    function resizeCanvas() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+    }
 
-        // --- Mảng chứa các xung LED đang chạy ---
-        let pulses = [];
-
-        // --- Cấu hình ---
-        const CONFIG = {
-            gridSize: 80,          // Khoảng cách lưới cơ sở (px)
-            traceCount: 14,        // Số đường mạch
-            pulseCount: 10,        // Số xung LED cùng lúc
-            pulseSpeed: 0.6,       // Tốc độ xung (px/frame)
-            traceColor: 'rgba(40, 42, 48, 0.55)',   // Màu đường mạch xám tối
-            nodeColor: 'rgba(70, 72, 80, 0.7)',     // Màu nút giao
-            pulseColor: 'rgba(255, 255, 255, 0.35)',// Màu xung LED trắng
-            pulseGlow: 'rgba(255, 255, 255, 0.12)'  // Quầng sáng xung
-        };
-
-        /**
-         * Điều chỉnh kích thước canvas theo cửa sổ.
-         * Đồng thời tạo lại lưới mạch khi resize.
-         */
-        function resizeCanvas() {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-            buildTraces();  // Tạo lại đường mạch theo kích thước mới
-            buildPulses();  // Tạo lại xung LED
+    // Sinh ngẫu nhiên vị trí + vận tốc ban đầu cho từng nút mạch.
+    // Trên màn hình nhỏ (mobile) giảm bớt số lượng nút để đỡ giật lag.
+    function createNodes() {
+        var count = width < 640 ? Math.floor(CONFIG.nodeCount / 2.5) : CONFIG.nodeCount;
+        nodes = [];
+        for (var i = 0; i < count; i++) {
+            nodes.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                vx: (Math.random() - 0.5) * CONFIG.nodeSpeed,
+                vy: (Math.random() - 0.5) * CONFIG.nodeSpeed
+            });
         }
+    }
 
-        /**
-         * Tạo ngẫu nhiên các đường mạch kiểu PCB.
-         * Mỗi đường gồm nhiều đoạn thẳng vuông góc (90 độ).
-         */
-        function buildTraces() {
-            traces = [];
-            const cols = Math.ceil(width / CONFIG.gridSize);
-            const rows = Math.ceil(height / CONFIG.gridSize);
+    // Cập nhật vị trí từng nút; nút nào chạm biên màn hình thì "dội ngược" lại
+    function updateNodes() {
+        nodes.forEach(function (node) {
+            node.x += node.vx;
+            node.y += node.vy;
 
-            for (let i = 0; i < CONFIG.traceCount; i++) {
-                // Điểm bắt đầu ngẫu nhiên trên lưới
-                let x = Math.floor(Math.random() * cols) * CONFIG.gridSize;
-                let y = Math.floor(Math.random() * rows) * CONFIG.gridSize;
+            if (node.x <= 0 || node.x >= width) node.vx *= -1;
+            if (node.y <= 0 || node.y >= height) node.vy *= -1;
+        });
+    }
 
-                // Mỗi đường gồm 3-6 đoạn
-                const segments = 3 + Math.floor(Math.random() * 4);
-                const points = [{ x, y }];
+    // Vẽ lại toàn bộ khung hình: đường nối trước, chấm nút sau (để chấm nổi lên trên)
+    function drawFrame() {
+        ctx.clearRect(0, 0, width, height);
 
-                for (let s = 0; s < segments; s++) {
-                    // Chọn hướng đi ngang hoặc dọc
-                    const horizontal = Math.random() > 0.5;
-                    // Bước nhảy 1-3 ô lưới
-                    const step = (1 + Math.floor(Math.random() * 3)) * CONFIG.gridSize;
-                    // Hướng dương hoặc âm
-                    const dir = Math.random() > 0.5 ? 1 : -1;
+        for (var i = 0; i < nodes.length; i++) {
+            for (var j = i + 1; j < nodes.length; j++) {
+                var dx = nodes[i].x - nodes[j].x;
+                var dy = nodes[i].y - nodes[j].y;
+                var distance = Math.sqrt(dx * dx + dy * dy);
 
-                    if (horizontal) {
-                        x += step * dir;
-                    } else {
-                        y += step * dir;
-                    }
-
-                    // Giới hạn trong khung hình
-                    x = Math.max(0, Math.min(width, x));
-                    y = Math.max(0, Math.min(height, y));
-
-                    points.push({ x, y });
-                }
-
-                traces.push(points);
-            }
-        }
-
-        /**
-         * Tạo các xung LED ban đầu, mỗi xung gắn với 1 đường mạch.
-         */
-        function buildPulses() {
-            pulses = [];
-            if (traces.length === 0) return;
-
-            for (let i = 0; i < CONFIG.pulseCount; i++) {
-                const traceIndex = Math.floor(Math.random() * traces.length);
-                const trace = traces[traceIndex];
-                if (trace.length < 2) continue;
-
-                pulses.push({
-                    traceIndex: traceIndex,
-                    segmentIndex: 0,        // Đang ở đoạn nào
-                    progress: 0,            // Tiến độ trên đoạn (0 -> 1)
-                    speed: CONFIG.pulseSpeed * (0.7 + Math.random() * 0.6),
-                    delay: Math.random() * 200  // Delay ngẫu nhiên ban đầu
-                });
-            }
-        }
-
-        /**
-         * Tính toán vị trí hiện tại (x, y) của một xung dựa trên
-         * traceIndex, segmentIndex và progress.
-         */
-        function getPulsePosition(pulse) {
-            const trace = traces[pulse.traceIndex];
-            if (!trace || pulse.segmentIndex >= trace.length - 1) return null;
-
-            const start = trace[pulse.segmentIndex];
-            const end = trace[pulse.segmentIndex + 1];
-
-            const x = start.x + (end.x - start.x) * pulse.progress;
-            const y = start.y + (end.y - start.y) * pulse.progress;
-
-            return { x, y, start, end };
-        }
-
-        /**
-         * Vẽ toàn bộ đường mạch (tĩnh, màu tối).
-         */
-        function drawTraces() {
-            ctx.strokeStyle = CONFIG.traceColor;
-            ctx.lineWidth = 1.2;
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-
-            traces.forEach(function (points) {
-                if (points.length < 2) return;
-                ctx.beginPath();
-                ctx.moveTo(points[0].x, points[0].y);
-                for (let i = 1; i < points.length; i++) {
-                    ctx.lineTo(points[i].x, points[i].y);
-                }
-                ctx.stroke();
-
-                // Vẽ các nút giao nhỏ (node) tại mỗi đỉnh
-                ctx.fillStyle = CONFIG.nodeColor;
-                points.forEach(function (p) {
+                if (distance < CONFIG.maxDistance) {
+                    // 2 nút càng gần nhau thì đường nối càng rõ (opacity càng cao)
+                    var opacity = (1 - distance / CONFIG.maxDistance) * 0.35;
+                    ctx.strokeStyle = 'rgba(160, 160, 168, ' + opacity + ')';
+                    ctx.lineWidth = 1;
                     ctx.beginPath();
-                    ctx.arc(p.x, p.y, 1.8, 0, Math.PI * 2);
-                    ctx.fill();
-                });
-            });
-        }
-
-        /**
-         * Cập nhật và vẽ các xung LED.
-         */
-        function updateAndDrawPulses() {
-            pulses.forEach(function (pulse) {
-                // Xử lý delay ban đầu
-                if (pulse.delay > 0) {
-                    pulse.delay -= 1;
-                    return;
-                }
-
-                const pos = getPulsePosition(pulse);
-                if (!pos) {
-                    // Hết đường -> reset về đầu với đường mới
-                    pulse.traceIndex = Math.floor(Math.random() * traces.length);
-                    pulse.segmentIndex = 0;
-                    pulse.progress = 0;
-                    pulse.delay = Math.random() * 120;
-                    return;
-                }
-
-                // --- Vẽ quầng sáng (glow) trước ---
-                ctx.fillStyle = CONFIG.pulseGlow;
-                ctx.beginPath();
-                ctx.arc(pos.x, pos.y, 8, 0, Math.PI * 2);
-                ctx.fill();
-
-                // --- Vẽ điểm LED trắng sáng ---
-                ctx.fillStyle = CONFIG.pulseColor;
-                ctx.beginPath();
-                ctx.arc(pos.x, pos.y, 2.2, 0, Math.PI * 2);
-                ctx.fill();
-
-                // --- Vẽ vệt mờ phía sau xung (trail) ---
-                const trailLength = 0.15;
-                const trailProgress = Math.max(0, pulse.progress - trailLength);
-                const tx = pos.start.x + (pos.end.x - pos.start.x) * trailProgress;
-                const ty = pos.start.y + (pos.end.y - pos.start.y) * trailProgress;
-
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(tx, ty);
-                ctx.lineTo(pos.x, pos.y);
-                ctx.stroke();
-
-                // --- Cập nhật tiến độ ---
-                const segLength = Math.hypot(
-                    pos.end.x - pos.start.x,
-                    pos.end.y - pos.start.y
-                );
-                // Tránh chia cho 0
-                const stepProgress = segLength > 0 ? (pulse.speed / segLength) : 1;
-                pulse.progress += stepProgress;
-
-                // Nếu vượt qua đoạn hiện tại -> sang đoạn kế tiếp
-                if (pulse.progress >= 1) {
-                    pulse.progress = 0;
-                    pulse.segmentIndex += 1;
-                }
-            });
-        }
-
-        /**
-         * Vòng lặp render chính.
-         */
-        function render() {
-            // Xóa canvas
-            ctx.clearRect(0, 0, width, height);
-
-            // Vẽ lớp tĩnh: đường mạch
-            drawTraces();
-
-            // Vẽ lớp động: xung LED
-            updateAndDrawPulses();
-
-            // Gọi lại frame tiếp theo
-            requestAnimationFrame(render);
-        }
-
-        // --- Khởi động ---
-        resizeCanvas();
-        render();
-
-        // --- Lắng nghe resize cửa sổ ---
-        // Dùng debounce nhẹ để tránh tạo lại quá nhiều lần
-        let resizeTimer = null;
-        window.addEventListener('resize', function () {
-            if (resizeTimer) clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(resizeCanvas, 200);
-        });
-    })();
-
-    /* ============================================================
-       3. HIỆU ỨNG GÕ CHỮ ĐỘNG (#typing-role)
-       ============================================================ */
-
-    /**
-     * Lần lượt gõ và xóa các cụm từ định hướng nghề nghiệp.
-     * Chu kỳ: gõ từng ký tự -> dừng -> xóa từng ký tự -> chuyển từ tiếp.
-     */
-    (function initTypingEffect() {
-        const typingElement = document.getElementById('typing-role');
-        if (!typingElement) return;
-
-        // Danh sách cụm từ sẽ gõ
-        const phrases = [
-            'Blue Team Defender',
-            'SOC Analyst Aspirant',
-            'DFIR & Memory Forensics',
-            'KMA Information Security Student'
-        ];
-
-        // Cấu hình tốc độ (ms)
-        const TYPE_SPEED = 70;       // Tốc độ gõ mỗi ký tự
-        const DELETE_SPEED = 40;     // Tốc độ xóa mỗi ký tự
-        const HOLD_DELAY = 1800;     // Thời gian giữ nguyên cụm từ đã gõ xong
-        const BETWEEN_DELAY = 400;   // Thời gian chờ trước khi gõ từ tiếp theo
-
-        let phraseIndex = 0;         // Đang ở cụm từ nào
-        let charIndex = 0;           // Đang gõ đến ký tự nào
-        let isDeleting = false;      // Đang xóa hay đang gõ
-
-        /**
-         * Hàm đệ quy tự gọi lại với setTimeout để tạo nhịp.
-         */
-        function tick() {
-            const currentPhrase = phrases[phraseIndex];
-
-            if (isDeleting) {
-                // --- Đang xóa ---
-                charIndex--;
-                typingElement.textContent = currentPhrase.substring(0, charIndex);
-
-                if (charIndex === 0) {
-                    // Xóa xong -> chuyển từ tiếp theo
-                    isDeleting = false;
-                    phraseIndex = (phraseIndex + 1) % phrases.length;
-                    setTimeout(tick, BETWEEN_DELAY);
-                } else {
-                    setTimeout(tick, DELETE_SPEED);
-                }
-            } else {
-                // --- Đang gõ ---
-                charIndex++;
-                typingElement.textContent = currentPhrase.substring(0, charIndex);
-
-                if (charIndex === currentPhrase.length) {
-                    // Gõ xong -> giữ nguyên một lúc rồi xóa
-                    isDeleting = true;
-                    setTimeout(tick, HOLD_DELAY);
-                } else {
-                    setTimeout(tick, TYPE_SPEED);
+                    ctx.moveTo(nodes[i].x, nodes[i].y);
+                    ctx.lineTo(nodes[j].x, nodes[j].y);
+                    ctx.stroke();
                 }
             }
         }
 
-        // Bắt đầu sau 500ms
-        setTimeout(tick, 500);
-    })();
+        ctx.fillStyle = 'rgba(228, 228, 231, 0.6)'; // Trùng màu --led-color trong style.css
+        nodes.forEach(function (node) {
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, CONFIG.nodeRadius, 0, Math.PI * 2);
+            ctx.fill();
+        });
+    }
 
-    /* ============================================================
-       4. BỘ LỌC DỰ ÁN (Project Filter)
-       ============================================================ */
+    // Vòng lặp animation chạy liên tục bằng requestAnimationFrame
+    // (mượt hơn setInterval vì được trình duyệt đồng bộ theo khung hình)
+    function animate() {
+        updateNodes();
+        drawFrame();
+        requestAnimationFrame(animate);
+    }
 
-    (function initProjectFilter() {
-        const filterBar = document.getElementById('project-filter');
-        if (!filterBar) return;
+    resizeCanvas();
+    createNodes();
+    animate();
 
-        const filterButtons = filterBar.querySelectorAll('.filter-btn');
-        const projectCards = document.querySelectorAll('.project-card');
+    // Khi người dùng resize cửa sổ: tính lại kích thước + tạo lại nút cho phù hợp
+    window.addEventListener('resize', function () {
+        resizeCanvas();
+        createNodes();
+    });
+}
 
-        // Gắn sự kiện cho từng nút lọc
-        filterButtons.forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                const filterValue = btn.getAttribute('data-filter');
 
-                // --- Cập nhật trạng thái active cho nút ---
-                filterButtons.forEach(function (b) {
-                    b.classList.remove('active');
-                });
-                btn.classList.add('active');
+/* ================================================================== */
+/*  3. HIỆU ỨNG GÕ CHỮ ĐỘNG (#typing-role)                             */
+/*  Lần lượt gõ ra từng vai trò trong mảng ROLES, dừng lại 1 chút,      */
+/*  xoá đi rồi chuyển sang vai trò kế tiếp, lặp vô hạn.                 */
+/* ================================================================== */
+function initTypingEffect() {
+    var el = document.getElementById('typing-role');
+    if (!el) return;
 
-                // --- Lọc các thẻ dự án ---
-                projectCards.forEach(function (card) {
-                    const category = card.getAttribute('data-category');
+    var ROLES = [
+        'Blue Team Defender',
+        'SOC Analyst Aspirant',
+        'DFIR & Memory Forensics',
+        'KMA Information Security Student'
+    ];
 
-                    if (filterValue === 'all' || category === filterValue) {
-                        // Hiển thị: dùng animation fade in nhẹ
-                        card.style.display = 'flex';
-                        // Reset animation
-                        card.style.animation = 'none';
-                        // Force reflow để animation chạy lại
-                        void card.offsetWidth;
-                        card.style.animation = 'fadeSlideIn 0.35s ease forwards';
-                    } else {
-                        // Ẩn
-                        card.style.display = 'none';
-                    }
-                });
+    var TYPE_SPEED = 80;     // Tốc độ gõ từng ký tự (ms/ký tự)
+    var DELETE_SPEED = 45;   // Tốc độ xoá từng ký tự (ms/ký tự) - xoá nhanh hơn gõ
+    var HOLD_TIME = 1800;    // Thời gian giữ nguyên chuỗi sau khi gõ xong (ms)
+    var PAUSE_BEFORE_NEXT = 400; // Thời gian nghỉ trước khi gõ chuỗi tiếp theo (ms)
+
+    var roleIndex = 0;       // Đang ở vai trò thứ mấy trong mảng ROLES
+    var charIndex = 0;       // Đang gõ/xoá tới ký tự thứ mấy
+    var isDeleting = false;  // true = đang ở pha xoá chữ, false = đang ở pha gõ chữ
+
+    function tick() {
+        var currentRole = ROLES[roleIndex];
+        var delay;
+
+        if (isDeleting) {
+            charIndex--;
+            delay = DELETE_SPEED;
+        } else {
+            charIndex++;
+            delay = TYPE_SPEED;
+        }
+
+        el.textContent = currentRole.substring(0, charIndex);
+
+        if (!isDeleting && charIndex === currentRole.length) {
+            // Gõ xong trọn vẹn 1 vai trò -> giữ nguyên 1 lúc rồi mới bắt đầu xoá
+            isDeleting = true;
+            delay = HOLD_TIME;
+        } else if (isDeleting && charIndex === 0) {
+            // Xoá xong -> chuyển sang vai trò kế tiếp (hết mảng thì quay lại đầu)
+            isDeleting = false;
+            roleIndex = (roleIndex + 1) % ROLES.length;
+            delay = PAUSE_BEFORE_NEXT;
+        }
+
+        setTimeout(tick, delay);
+    }
+
+    tick();
+}
+
+
+/* ================================================================== */
+/*  4. BỘ LỌC DỰ ÁN (#project-filter)                                  */
+/*  Bấm vào 1 nút lọc (All / DFIR & Forensics / Network & System /      */
+/*  Cryptography) sẽ chỉ hiện các .project-card có data-category        */
+/*  tương ứng, ẩn các thẻ còn lại.                                       */
+/* ================================================================== */
+function initProjectFilter() {
+    var filterBar = document.getElementById('project-filter');
+    if (!filterBar) return;
+
+    var filterButtons = filterBar.querySelectorAll('.filter-btn');
+    var projectCards = document.querySelectorAll('.project-card');
+
+    filterButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+            var filterValue = button.dataset.filter;
+
+            // Chỉ nút vừa bấm mới được gắn class "active"
+            filterButtons.forEach(function (btn) {
+                btn.classList.remove('active');
+            });
+            button.classList.add('active');
+
+            // "all" thì hiện hết, còn lại thì so khớp đúng data-category
+            projectCards.forEach(function (card) {
+                var matches = filterValue === 'all' || card.dataset.category === filterValue;
+                card.style.display = matches ? '' : 'none';
             });
         });
-    })();
+    });
+}
 
-    /* ============================================================
-       5. NÚT COPY EMAIL (Home mini + Contact terminal)
-       ============================================================ */
 
-    (function initCopyEmail() {
-        const EMAIL = 'leeddinhfthucws000@gmail.com';
+/* ================================================================== */
+/*  5. COPY EMAIL (#copy-email-btn & #copy-email-mini) + TOAST         */
+/* ================================================================== */
 
-        /**
-         * Hàm copy email vào clipboard và hiển thị phản hồi.
-         * @param {HTMLElement} button - Nút được nhấn (để đổi text tạm thời)
-         */
-        function copyEmailToClipboard(button) {
-            // Lưu nội dung gốc của nút để khôi phục sau
-            const originalHTML = button.innerHTML;
+var EMAIL_ADDRESS = 'leeddinhfthucws000@gmail.com';
+var toastHideTimer = null; // Lưu lại timeout đang chờ ẩn toast, để có thể huỷ khi cần
 
-            // Dùng Clipboard API nếu có, fallback về execCommand
+/**
+ * Hiện khung thông báo Toast ở góc dưới bên trái với nội dung tuỳ ý,
+ * tự động ẩn đi sau 2.5 giây.
+ * @param {string} message - Nội dung muốn hiển thị trong Toast
+ */
+function showToast(message) {
+    var toast = document.getElementById('toast');
+    var toastMessage = document.getElementById('toast-message');
+    if (!toast || !toastMessage) return;
+
+    toastMessage.textContent = message;
+    toast.classList.add('show');
+
+    // Nếu người dùng bấm copy liên tục nhiều lần, huỷ timer cũ để tránh
+    // toast bị ẩn đi ngay sau khi vừa đổi sang nội dung mới nhất
+    clearTimeout(toastHideTimer);
+    toastHideTimer = setTimeout(function () {
+        toast.classList.remove('show');
+    }, 2500);
+}
+
+/**
+ * Cách copy văn bản dự phòng, dùng khi trình duyệt không hỗ trợ
+ * (hoặc không cho phép) Clipboard API hiện đại (navigator.clipboard).
+ * @param {string} text - Văn bản cần copy vào clipboard
+ */
+function fallbackCopyText(text) {
+    var tempInput = document.createElement('textarea');
+    tempInput.value = text;
+    // Đưa ra ngoài màn hình để người dùng không nhìn thấy ô nhập tạm này
+    tempInput.style.position = 'fixed';
+    tempInput.style.opacity = '0';
+    document.body.appendChild(tempInput);
+    tempInput.focus();
+    tempInput.select();
+    document.execCommand('copy');
+    document.body.removeChild(tempInput);
+}
+
+/**
+ * Gắn sự kiện copy email cho cả 2 nút:
+ *   - #copy-email-btn  (nằm trong Terminal Card ở trang Contact)
+ *   - #copy-email-mini (nằm trong thẻ preview Contact ở trang Home)
+ */
+function initCopyEmail() {
+    var buttons = document.querySelectorAll('#copy-email-btn, #copy-email-mini');
+
+    buttons.forEach(function (button) {
+        button.addEventListener('click', function (event) {
+            // #copy-email-mini nằm LỒNG BÊN TRONG 1 .preview-card (thẻ này có
+            // sự kiện click riêng để chuyển section) -> phải chặn sự kiện lan
+            // lên thẻ cha, nếu không mỗi lần bấm Copy Email sẽ vô tình bị
+            // điều hướng sang section khác.
+            event.stopPropagation();
+
             if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(EMAIL)
+                navigator.clipboard.writeText(EMAIL_ADDRESS)
                     .then(function () {
-                        showCopiedFeedback(button, originalHTML);
+                        showToast('Email copied to clipboard!');
                     })
                     .catch(function () {
-                        fallbackCopy(button, originalHTML);
+                        // Trình duyệt chặn quyền truy cập clipboard -> dùng cách dự phòng
+                        fallbackCopyText(EMAIL_ADDRESS);
+                        showToast('Email copied to clipboard!');
                     });
             } else {
-                fallbackCopy(button, originalHTML);
+                // Môi trường không có Clipboard API (trình duyệt cũ, hoặc chạy qua http)
+                fallbackCopyText(EMAIL_ADDRESS);
+                showToast('Email copied to clipboard!');
             }
+        });
+    });
+}
+
+
+/* ================================================================== */
+/*  6. TỰ ĐỘNG CẬP NHẬT NĂM HIỆN TẠI Ở FOOTER (#current-year)          */
+/* ================================================================== */
+function initCurrentYear() {
+    var yearEl = document.getElementById('current-year');
+    if (yearEl) {
+        yearEl.textContent = new Date().getFullYear();
+    }
+}
+
+
+/* ================================================================== */
+/*  7. PHÍM TẮT CHUYỂN SECTION BẰNG BÀN PHÍM (1 / 2 / 3 / 4)           */
+/*     1 -> Home | 2 -> Projects | 3 -> Roadmap | 4 -> Contact          */
+/* ================================================================== */
+function initKeyboardShortcuts() {
+    var SHORTCUT_MAP = {
+        '1': 'home',
+        '2': 'projects',
+        '3': 'roadmap',
+        '4': 'contact'
+    };
+
+    document.addEventListener('keydown', function (event) {
+        // Nếu người dùng đang gõ chữ trong 1 ô input/textarea (vd: form Quick
+        // Message) thì bỏ qua, tránh việc gõ số "1", "2"... trong nội dung tin
+        // nhắn bị hiểu nhầm thành phím tắt chuyển trang.
+        var activeTag = document.activeElement ? document.activeElement.tagName : '';
+        if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') return;
+
+        var targetSection = SHORTCUT_MAP[event.key];
+        if (targetSection) {
+            switchSection(targetSection);
         }
+    });
+}
 
-        /**
-         * Fallback copy bằng textarea ẩn (cho trình duyệt cũ / http).
-         */
-        function fallbackCopy(button, originalHTML) {
-            const textarea = document.createElement('textarea');
-            textarea.value = EMAIL;
-            textarea.style.position = 'fixed';
-            textarea.style.opacity = '0';
-            document.body.appendChild(textarea);
-            textarea.select();
-            try {
-                document.execCommand('copy');
-                showCopiedFeedback(button, originalHTML);
-            } catch (err) {
-                // Nếu vẫn lỗi, hiển thị toast lỗi
-                showToast('Copy failed. Please copy manually: ' + EMAIL);
-            }
-            document.body.removeChild(textarea);
-        }
 
-        /**
-         * Hiển thị phản hồi "Copied!" trên nút trong 2 giây.
-         */
-        function showCopiedFeedback(button, originalHTML) {
-            button.innerHTML = '<i class="fas fa-check"></i> Copied!';
-            button.style.borderColor = 'var(--border-hover)';
-            button.style.boxShadow = 'var(--glow-white)';
-            button.style.color = 'var(--text-title)';
+/* ================================================================== */
+/*  8. FORM QUICK MESSAGE (#quick-message-form)                        */
+/*                                                                      */
+/*  THAY ĐỔI QUAN TRỌNG SO VỚI BẢN TRƯỚC:                               */
+/*  Bản cũ dùng event.preventDefault() để chặn hẳn hành vi submit mặc   */
+/*  định của form, rồi tự dựng 1 link "mailto:..." và mở ứng dụng email */
+/*  trên máy người dùng. Cách này đã được GỠ BỎ HOÀN TOÀN.              */
+/*                                                                      */
+/*  Bây giờ form có action="https://formsubmit.co/..." + method="POST" */
+/*  được khai báo sẵn ngay trong thẻ <form> ở index.html, nên chỉ cần   */
+/*  để trình duyệt tự submit bình thường (gửi POST request thật sự lên  */
+/*  FormSubmit, rồi FormSubmit sẽ forward nội dung vào email của bạn).  */
+/*  Script ở đây CHỈ làm đúng 1 việc: kiểm tra dữ liệu rỗng cơ bản       */
+/*  trước khi submit, để không gửi đi 1 request trống không cần thiết.  */
+/* ================================================================== */
+function initQuickMessageForm() {
+    var form = document.getElementById('quick-message-form');
+    if (!form) return;
 
-            showToast('Email copied to clipboard!');
+    form.addEventListener('submit', function (event) {
+        var emailField = form.querySelector('#msg-email');
+        var subjectField = form.querySelector('#msg-subject');
+        var bodyField = form.querySelector('#msg-body');
 
-            // Khôi phục sau 2 giây
-            setTimeout(function () {
-                button.innerHTML = originalHTML;
-                button.style.borderColor = '';
-                button.style.boxShadow = '';
-                button.style.color = '';
-            }, 2000);
-        }
+        var isMissingData =
+            !emailField.value.trim() ||
+            !subjectField.value.trim() ||
+            !bodyField.value.trim();
 
-        /**
-         * Hiển thị toast thông báo ở góc màn hình.
-         */
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toast-message');
-            if (!toast || !toastMessage) return;
-
-            toastMessage.textContent = message;
-            toast.classList.add('show');
-
-            // Tự ẩn sau 2.5 giây
-            setTimeout(function () {
-                toast.classList.remove('show');
-            }, 2500);
-        }
-
-        // --- Gắn sự kiện cho nút copy ở trang Contact ---
-        const copyBtnMain = document.getElementById('copy-email-btn');
-        if (copyBtnMain) {
-            copyBtnMain.addEventListener('click', function () {
-                copyEmailToClipboard(copyBtnMain);
-            });
-        }
-
-        // --- Gắn sự kiện cho nút copy mini ở trang Home ---
-        const copyBtnMini = document.getElementById('copy-email-mini');
-        if (copyBtnMini) {
-            copyBtnMini.addEventListener('click', function (event) {
-                // Ngăn sự kiện click lan lên preview-card (tránh chuyển tab)
-                event.stopPropagation();
-                copyEmailToClipboard(copyBtnMini);
-            });
-        }
-    })();
-
-    /* ============================================================
-       6. XỬ LÝ FORM GỬI TIN NHẮN NHANH (mailto)
-       ============================================================ */
-
-    (function initQuickMessageForm() {
-        const form = document.getElementById('quick-message-form');
-        if (!form) return;
-
-        const EMAIL = 'leeddinhfthucws000@gmail.com';
-
-        form.addEventListener('submit', function (event) {
-            // Ngăn form submit mặc định (tránh reload trang)
+        if (isMissingData) {
+            // Còn trường trống -> chặn submit lần này, báo cho người dùng biết
+            // bằng toast thay vì để trình duyệt tự hiện thông báo mặc định.
             event.preventDefault();
-
-            // Lấy giá trị người dùng nhập
-            const subjectInput = document.getElementById('msg-subject');
-            const bodyInput = document.getElementById('msg-body');
-
-            const subject = subjectInput ? subjectInput.value.trim() : '';
-            const body = bodyInput ? bodyInput.value.trim() : '';
-
-            // Validate cơ bản
-            if (!subject || !body) {
-                alert('Please fill in both Subject and Message fields.');
-                return;
-            }
-
-            // Mã hóa để chèn vào URL mailto an toàn
-            const encodedSubject = encodeURIComponent(subject);
-            const encodedBody = encodeURIComponent(body);
-
-            // Tạo URL mailto
-            const mailtoUrl = 'mailto:' + EMAIL +
-                '?subject=' + encodedSubject +
-                '&body=' + encodedBody;
-
-            // Mở trình gửi mail mặc định
-            window.location.href = mailtoUrl;
-
-            // Xóa form sau khi gửi (tùy chọn)
-            form.reset();
-        });
-    })();
-
-    /* ============================================================
-       7. CẬP NHẬT NĂM BẢN QUYỀN Ở FOOTER
-       ============================================================ */
-
-    (function updateCurrentYear() {
-        const yearEl = document.getElementById('current-year');
-        if (yearEl) {
-            yearEl.textContent = new Date().getFullYear();
-        }
-    })();
-
-    /* ============================================================
-       8. XỬ LÝ PHÍM TẮT (TÙY CHỌN) — Điều hướng bằng phím số
-       Nhấn 1 -> Home, 2 -> Projects, 3 -> Roadmap, 4 -> Contact
-       Có thể bỏ nếu không cần.
-       ============================================================ */
-
-    (function initKeyboardShortcuts() {
-        // Bỏ qua nếu người dùng đang gõ trong input/textarea
-        function isTypingInInput(event) {
-            const tag = event.target.tagName.toLowerCase();
-            return tag === 'input' || tag === 'textarea' || event.target.isContentEditable;
+            showToast('Please fill in all fields before sending.');
+            return;
         }
 
-        document.addEventListener('keydown', function (event) {
-            if (isTypingInInput(event)) return;
+        // Dữ liệu hợp lệ -> KHÔNG gọi preventDefault(), để trình duyệt tự
+        // submit request POST thật sự tới FormSubmit như cấu hình trong HTML.
+    });
+}
 
-            // Chỉ xử lý khi không nhấn modifier
-            if (event.ctrlKey || event.altKey || event.metaKey) return;
 
-            const key = event.key;
-            const map = {
-                '1': 'home',
-                '2': 'projects',
-                '3': 'roadmap',
-                '4': 'contact'
-            };
-
-            if (map[key]) {
-                switchSection(map[key]);
-            }
-        });
-    })();
-
-});
+/* ================================================================== */
+/*  KHỞI CHẠY TOÀN BỘ TÍNH NĂNG NGAY KHI SCRIPT ĐƯỢC LOAD              */
+/*  (đã giải thích ở đầu file: script có "defer" nên DOM chắc chắn đã  */
+/*  sẵn sàng tại thời điểm các dòng gọi hàm bên dưới được thực thi)     */
+/* ================================================================== */
+initNavigation();
+initCircuitBackground();
+initTypingEffect();
+initProjectFilter();
+initCopyEmail();
+initCurrentYear();
+initKeyboardShortcuts();
+initQuickMessageForm();

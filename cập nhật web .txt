@@ -1,0 +1,4 @@
+chỉ cần sửa code, lưu code, chạy lệnh ubuntu tại đúng địa chỉ thư mục 3 lệnh
+git add .
+git commit -m "Cap nhat noi dung web"
+git push
